@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #0b0f17;
+    color: #f1f5f9;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'IBM Plex Mono', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Prism.js Custom High-Contrast Dark Terminal Palette */
+.prism-code .token.comment,
+.prism-code .token.prolog,
+.prism-code .token.doctype,
+.prism-code .token.cdata {
+  color: #64748b;
+  font-style: italic;
+}
+
+.prism-code .token.punctuation {
+  color: #94a3b8;
+}
+
+.prism-code .token.property,
+.prism-code .token.tag,
+.prism-code .token.boolean,
+.prism-code .token.number,
+.prism-code .token.constant,
+.prism-code .token.symbol,
+.prism-code .token.deleted {
+  color: #f472b6;
+}
+
+.prism-code .token.selector,
+.prism-code .token.attr-name,
+.prism-code .token.string,
+.prism-code .token.char,
+.prism-code .token.builtin,
+.prism-code .token.inserted {
+  color: #34d399;
+}
+
+.prism-code .token.operator,
+.prism-code .token.entity,
+.prism-code .token.url,
+.prism-code .token.variable {
+  color: #38bdf8;
+}
+
+.prism-code .token.atrule,
+.prism-code .token.attr-value,
+.prism-code .token.function,
+.prism-code .token.class-name {
+  color: #fbbf24;
+}
+
+.prism-code .token.keyword {
+  color: #60a5fa;
+  font-weight: 500;
+}
+
+.prism-code .token.regex,
+.prism-code .token.important {
+  color: #fb923c;
+}

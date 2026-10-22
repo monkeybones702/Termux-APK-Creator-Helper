@@ -1,0 +1,61 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidProjectConfig(data, userId) {
+      return data.keys().hasAll(['userId', 'name', 'packageName', 'minSdk', 'targetSdk', 'createdAt']) &&
+        data.keys().hasOnly(['userId', 'name', 'packageName', 'minSdk', 'targetSdk', 'selectedIdeas', 'createdAt']) &&
+        data.userId is string && data.userId == userId && data.userId.size() <= 128 &&
+        data.name is string && data.name.size() >= 1 && data.name.size() <= 100 &&
+        data.packageName is string && data.packageName.size() <= 150 &&
+        data.packageName.matches('^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$') &&
+        data.minSdk is int && data.minSdk >= 14 && data.minSdk <= 35 &&
+        data.targetSdk is int && data.targetSdk >= 14 && data.targetSdk <= 36 &&
+        (!('selectedIdeas' in data) || (data.selectedIdeas is list && data.selectedIdeas.size() <= 50)) &&
+        data.createdAt == request.time;
+    }
+
+    function isValidCommandHistoryItem(data, userId) {
+      return data.keys().hasAll(['userId', 'title', 'category', 'projectName', 'command', 'pinned', 'createdAt']) &&
+        data.keys().hasOnly(['userId', 'title', 'category', 'projectName', 'command', 'pinned', 'createdAt']) &&
+        data.userId is string && data.userId == userId && data.userId.size() <= 128 &&
+        data.title is string && data.title.size() >= 1 && data.title.size() <= 160 &&
+        data.category in ['setup', 'bootstrap', 'file', 'troubleshoot'] &&
+        data.projectName is string && data.projectName.size() <= 100 &&
+        data.command is string && data.command.size() >= 1 && data.command.size() <= 100000 &&
+        data.pinned is bool &&
+        data.createdAt == request.time;
+    }
+
+    match /users/{userId}/projects/{projectId} {
+      allow get: if isSignedIn() && request.auth.uid == userId && isValidId(projectId);
+      allow list: if isSignedIn() && request.auth.uid == userId;
+      allow create, update: if isSignedIn() &&
+        request.auth.uid == userId &&
+        isValidId(projectId) &&
+        isValidProjectConfig(request.resource.data, userId);
+      allow delete: if isSignedIn() && request.auth.uid == userId && isValidId(projectId);
+    }
+
+    match /users/{userId}/commandHistory/{commandId} {
+      allow get: if isSignedIn() && request.auth.uid == userId && isValidId(commandId);
+      allow list: if isSignedIn() && request.auth.uid == userId;
+      allow create, update: if isSignedIn() &&
+        request.auth.uid == userId &&
+        isValidId(commandId) &&
+        isValidCommandHistoryItem(request.resource.data, userId);
+      allow delete: if isSignedIn() && request.auth.uid == userId && isValidId(commandId);
+    }
+  }
+}

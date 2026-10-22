@@ -1,0 +1,51 @@
+{
+  "entities": {
+    "projectConfig": {
+      "title": "Project Configuration",
+      "description": "User saved project configurations for APK Creator Helper",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "packageName": {
+          "type": "string",
+          "maxLength": 150,
+          "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"
+        },
+        "minSdk": { "type": "integer" },
+        "targetSdk": { "type": "integer" },
+        "selectedIdeas": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "name", "packageName", "minSdk", "targetSdk", "createdAt"]
+    },
+    "commandHistoryItem": {
+      "title": "Command History Item",
+      "description": "Previously generated or copied Termux commands and scripts",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "category": {
+          "type": "string",
+          "enum": ["setup", "bootstrap", "file", "troubleshoot"]
+        },
+        "projectName": { "type": "string", "maxLength": 100 },
+        "command": { "type": "string", "minLength": 1, "maxLength": 100000 },
+        "pinned": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title", "category", "projectName", "command", "pinned", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/projects/{projectId}": {
+      "schema": "projectConfig",
+      "description": "Saved user APK project configurations"
+    },
+    "/users/{userId}/commandHistory/{commandId}": {
+      "schema": "commandHistoryItem",
+      "description": "Persistent log of user generated and copied Termux commands"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "APK Creator Helper for Termux",
+  "description": "A tool to help manage, configure, and execute Android APK compilation inside Termux.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
