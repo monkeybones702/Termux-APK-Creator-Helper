@@ -249,6 +249,14 @@ export const EXTENSIVE_FEATURE_IDEAS: FeatureIdea[] = [
     promptTemplate: 'Show how to schedule a background reminder or task using AlarmManager and a BroadcastReceiver.',
     codeEnhancementHint: 'Add AlarmManager scheduling logic with PendingIntent.',
   },
+  {
+    id: 'ui-viewflipper-tabs',
+    title: 'Multi-View Tab Switcher (ViewFlipper)',
+    category: 'UI & Navigation',
+    description: 'High-contrast navigation bar using LinearLayout and instant ViewFlipper transitions.',
+    promptTemplate: 'Implement a Multi-View Tab Switcher using ViewFlipper for Home, Logs, and Settings sections, with bottom navigation buttons.',
+    codeEnhancementHint: 'Use ViewFlipper and setDisplayedChild() to switch between XML layout sections.',
+  },
 ];
 
 import {

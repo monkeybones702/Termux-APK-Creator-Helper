@@ -125,6 +125,26 @@ export default function CommandHistorySidebar({
           >
             Clear
           </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              const content = history
+                .map((h) => `# [${h.timestamp}] ${h.title}\n${h.command}`)
+                .join('\n\n');
+              const blob = new Blob([content], { type: 'text/plain' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = 'termux-command-history.sh';
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+            title="Export command history"
+            className="px-2.5 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium transition-colors whitespace-nowrap cursor-pointer"
+          >
+            Export (.sh)
+          </button>
         </div>
 
         {/* Search Input */}

@@ -113,6 +113,35 @@ export default function ExportableFilesTab({
     onUpdateFiles(updated);
   };
 
+  const handleSnapshotFile = () => {
+    if (!activeFile) return;
+    const updated = projectFiles.map((f) => {
+      if (f.path === activeFile.path) {
+        const history = f.versionHistory || [];
+        return { ...f, versionHistory: [...history, f.content] };
+      }
+      return f;
+    });
+    onUpdateFiles(updated);
+    setStatusMessage('Version snapshot saved.');
+    setTimeout(() => setStatusMessage(''), 2000);
+  };
+
+  const handleRollbackFile = (index: number) => {
+    if (!activeFile || !activeFile.versionHistory) return;
+    const oldContent = activeFile.versionHistory[index];
+    const updated = projectFiles.map((f) => {
+      if (f.path === activeFile.path) {
+        const history = f.versionHistory!.slice(0, index);
+        return { ...f, content: oldContent, versionHistory: history };
+      }
+      return f;
+    });
+    onUpdateFiles(updated);
+    setStatusMessage('Rollback successful.');
+    setTimeout(() => setStatusMessage(''), 2000);
+  };
+
   const handleCopySingleFileCommand = () => {
     if (!activeFile) return;
     const lastSlash = activeFile.path.lastIndexOf('/');
@@ -618,32 +647,40 @@ chmod +x build.sh && ./build.sh
           {activeFile && (
             <>
               <div className="flex items-center justify-between bg-slate-900/90 border border-slate-800 rounded-lg px-4 py-2.5">
-                <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded border border-slate-800">
+                <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => setViewMode('highlighted')}
-                    className={`px-3 py-1 rounded text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap ${
-                      viewMode === 'highlighted'
-                        ? 'bg-blue-600 text-white'
-                        : 'text-slate-400 hover:text-slate-200'
-                    }`}
+                    onClick={handleSnapshotFile}
+                    className="px-3 py-1.5 rounded-md bg-emerald-950/40 hover:bg-emerald-900/60 text-emerald-300 text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
-                    <Eye size={13} />
-                    <span>Syntax Highlighted (Prism.js)</span>
+                    <Check size={13} />
+                    <span>Snapshot</span>
                   </button>
 
-                  <button
-                    type="button"
-                    onClick={() => setViewMode('edit')}
-                    className={`px-3 py-1 rounded text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap ${
-                      viewMode === 'edit'
-                        ? 'bg-blue-600 text-white'
-                        : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    <Edit3 size={13} />
-                    <span>Edit Source Code</span>
-                  </button>
+                  <div className="relative group">
+                    <button
+                      type="button"
+                      disabled={!activeFile.versionHistory || activeFile.versionHistory.length === 0}
+                      className="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-200 text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <RotateCcw size={13} />
+                      <span>Rollback ({activeFile.versionHistory?.length || 0})</span>
+                    </button>
+                    {activeFile.versionHistory && activeFile.versionHistory.length > 0 && (
+                      <div className="absolute right-0 top-full mt-1 w-48 bg-slate-800 border border-slate-700 rounded-md shadow-xl z-20 hidden group-hover:block">
+                        {activeFile.versionHistory.map((_, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => handleRollbackFile(i)}
+                            className="w-full text-left px-3 py-2 text-xs text-slate-300 hover:bg-slate-700 hover:text-white"
+                          >
+                            Restore Version {i + 1}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <button

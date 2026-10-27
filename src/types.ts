@@ -2,6 +2,7 @@ export interface ProjectFile {
   path: string;
   description: string;
   content: string;
+  versionHistory?: string[];
 }
 
 export interface ProjectConfig {
